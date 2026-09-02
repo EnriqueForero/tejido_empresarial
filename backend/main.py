@@ -11,6 +11,7 @@ import base64
 import logging
 import os
 import secrets
+import sys
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
@@ -45,6 +46,12 @@ from backend.glossary import GLOSSARY_PATH, METHODOLOGY_PATH, load_glossary
 from backend.models import FilterOptionsRequest, SearchRequest, clean_nit
 from backend.queries import build_company_query, build_count_query, build_export_query, build_preview_query
 
+# Los mensajes van a stdout para que aparezcan en los registros de Railway.
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s %(levelname)s %(name)s · %(message)s",
+    stream=sys.stdout,
+)
 logger = logging.getLogger("tejido")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,6 +84,7 @@ ACCESS_CONTROL_PARTIAL = bool(ACCESS_USER) != bool(ACCESS_PASSWORD)
 # APP_BASIC_USER y APP_BASIC_PASSWORD. Los campos de contacto se incluyen en la descarga
 # como en el original; pueden retirarse con EXPORT_INCLUDE_CONTACT_FIELDS=false.
 EXPORT_INCLUDE_CONTACT_FIELDS = _flag("EXPORT_INCLUDE_CONTACT_FIELDS", "true")
+DIAG_TOKEN = os.getenv("APP_DIAG_TOKEN", "").strip()
 
 app = FastAPI(
     title=APP_TITLE,
@@ -207,6 +215,19 @@ def _log_event(kind: str, detail: str, payload: str) -> None:
     snowflake.log_event(kind, "Tejido Empresarial", detail, payload)
 
 
+def _error_consulta(mensaje: str) -> str:
+    """Mensaje para el usuario; en datos reales apunta al diagnóstico y a los registros."""
+    if DEMO_MODE:
+        return f"{mensaje} Intenta nuevamente en unos segundos."
+    ultimo = snowflake.ultimo_error
+    if ultimo:
+        return f"{mensaje} Snowflake reportó: {ultimo}. Revise /api/diagnostico."
+    return (
+        f"{mensaje} Si vuelve a ocurrir, abra /api/diagnostico para ver en qué paso falla "
+        "la conexión con Snowflake, o revise los registros del servicio."
+    )
+
+
 def _require_connection() -> None:
     if not DEMO_MODE and not snowflake.configured:
         raise HTTPException(status_code=503, detail="La conexión de datos aún no está configurada en este entorno.")
@@ -225,20 +246,126 @@ def health(request: FastAPIRequest, deep: bool = False) -> dict[str, Any]:
             detail="Autenticación requerida para el health profundo.",
             headers={"WWW-Authenticate": 'Basic realm="Tejido Empresarial", charset="UTF-8"'},
         )
-    connection = "demo" if DEMO_MODE else ("configured" if snowflake.configured else "missing_configuration")
+    reporte = snowflake.configuration_report()
+    if DEMO_MODE:
+        connection = "demo"
+    elif not snowflake.configured:
+        connection = "missing_configuration"
+    elif reporte["last_error"]:
+        connection = "error"
+    elif reporte["verified"]:
+        # Ya hubo un apretón de manos correcto en este proceso.
+        connection = "connected"
+    else:
+        # Configuración completa, pero todavía sin ninguna consulta: no se puede
+        # afirmar que esté conectado. La página /estado resuelve esto con ?deep=true.
+        connection = "configured"
     if deep and not DEMO_MODE and snowflake.configured:
         try:
-            snowflake.scalar("SELECT 1 AS TOTAL")
+            snowflake.verificar()
             connection = "connected"
-        except Exception as exc:  # noqa: BLE001 - se informa como 503 sin exponer detalles
-            raise HTTPException(status_code=503, detail="Snowflake está configurado, pero no respondió.") from exc
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("Health profundo: Snowflake no respondió")
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Snowflake está configurado, pero no respondió. "
+                    "Consulte /api/diagnostico para ver en qué paso falla."
+                ),
+            ) from exc
+        reporte = snowflake.configuration_report()
     return {
         "status": "ok",
         "version": APP_VERSION,
         "data_connection": connection,
         "access_control": "basic" if ACCESS_CONTROL_ACTIVE else "open",
         "frontend_built": (FRONTEND_DIST / "index.html").is_file(),
+        "demo_mode": DEMO_MODE,
+        "snowflake": {
+            "connector_installed": reporte["connector_installed"],
+            "connector_version": reporte["connector_version"],
+            "missing_variables": reporte["missing_variables"],
+            "key_sources": reporte["key_sources"],
+            # Sólo si hubo un fallo de conexión; el detalle vive en /api/diagnostico.
+            "connection_error": bool(reporte["last_error"]),
+            "verified": reporte["verified"],
+            "verified_at": reporte["verified_at"],
+        },
     }
+
+
+@app.get("/api/diagnostico")
+def diagnostico(request: FastAPIRequest, token: str = "") -> dict[str, Any]:
+    """Revisa paso a paso entorno → conector → llave → sesión → tablas.
+
+    Devuelve el error real de cada paso, sin secretos. Para que no quede abierto
+    en un despliegue público exige una de tres condiciones: autenticación HTTP
+    Basic activa (el middleware ya la valida), APP_DIAG_TOKEN correcto, o
+    APP_ENV=development.
+    """
+    autorizado = (
+        ACCESS_CONTROL_ACTIVE
+        or APP_ENV != "production"
+        or (DIAG_TOKEN and secrets.compare_digest(token, DIAG_TOKEN))
+    )
+    if not autorizado:
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "El diagnóstico está cerrado en producción. Active una de estas opciones en "
+                "Railway y vuelva a intentarlo: (1) APP_BASIC_USER y APP_BASIC_PASSWORD "
+                "—recomendado, protege todo el aplicativo—, o (2) APP_DIAG_TOKEN y llame a "
+                "/api/diagnostico?token=EL_MISMO_VALOR."
+            ),
+        )
+    if DEMO_MODE:
+        return {
+            "modo": "demo",
+            "resumen": "El aplicativo está en modo demostración: no consulta Snowflake.",
+            "siguiente_paso": "Quite APP_DEMO_MODE (o póngala en false) para usar datos reales.",
+            "pasos": [],
+        }
+
+    pasos = snowflake.diagnostico()
+    fallo = next((paso for paso in pasos if not paso["ok"]), None)
+    if fallo:
+        logger.error("Diagnóstico: falló el paso '%s' — %s", fallo["paso"], fallo.get("error"))
+    return {
+        "modo": "snowflake",
+        "version": APP_VERSION,
+        "todo_ok": fallo is None,
+        "resumen": (
+            "Todos los pasos respondieron correctamente."
+            if fallo is None
+            else f"Primer fallo en el paso «{fallo['paso']}»: {fallo.get('error')}"
+        ),
+        "siguiente_paso": _sugerencia(fallo),
+        "pasos": pasos,
+    }
+
+
+def _sugerencia(fallo: dict[str, Any] | None) -> str:
+    """Qué hacer según el paso que falló (lenguaje operativo, no técnico)."""
+    if fallo is None:
+        return "Nada pendiente: la conexión y las tablas responden."
+    consejos = {
+        "entorno": "Complete en Railway las variables que aparecen como faltantes y redespliegue.",
+        "conector": "La imagen no trae el conector: revise que el build usara requirements-api.txt.",
+        "llave_1": "Regenere el valor con [Convert]::ToBase64String([IO.File]::ReadAllBytes(\"rsa_key_1.der\")) "
+                   "y péguelo en UNA sola línea, sin comillas ni saltos. Verifique la frase en SF_PRIVATE_KEY_PASSPHRASE_1.",
+        "llave_2": "Misma revisión para la llave de respaldo, o retire SF_PRIVATE_KEY_B64_2 si no la usa.",
+        "sesion": "Snowflake rechazó la conexión. Causas típicas: la llave pública no está registrada en el "
+                  "usuario (ALTER USER … SET RSA_PUBLIC_KEY), el rol o el warehouse no existen, o una política "
+                  "de red bloquea la IP de Railway. El texto del error lo precisa.",
+        "consulta_simple": "La sesión abre pero no ejecuta consultas: revise que el warehouse esté activo y con crédito.",
+        "tabla_filtros_generales": "El rol no ve la tabla de filtros: conceda SELECT sobre el esquema SEGMENTACION.",
+        "tabla_filtros_exportadoras": "El rol no ve FILTROS_EXPORTADORAS: conceda SELECT sobre el esquema.",
+        "tabla_empresas": "El rol no ve la tabla de empresas: conceda SELECT sobre TEJIDO_EMPRESARIAL_COMPLETO_BASE_MUNICIPIOS_P.",
+        "tabla_bienes": "El rol no ve PUBLIC.BIENES_Y_SERVICIOS_P: sin ella fallan los filtros de exportación.",
+        "tabla_eventos": "Sólo afecta la auditoría; el aplicativo funciona igual. Conceda INSERT en SEGUIMIENTO.EVENTOS.",
+        "consulta_vista_previa": "La consulta real falló: revise el mensaje; suele ser una columna o tabla sin permisos.",
+    }
+    return consejos.get(fallo["paso"], "Revise el mensaje de error del paso indicado.")
 
 
 @app.get("/api/metadata")
@@ -275,7 +402,7 @@ def filter_options(request: FilterOptionsRequest) -> dict[str, Any]:
         return {"filters": [*general, *exports], "demo": False}
     except Exception as exc:  # noqa: BLE001
         logger.exception("No fue posible cargar los filtros")
-        raise HTTPException(status_code=502, detail="No fue posible cargar los filtros en este momento.") from exc
+        raise HTTPException(status_code=502, detail=_error_consulta("No fue posible cargar los filtros.")) from exc
 
 
 @app.post("/api/companies/search")
@@ -307,7 +434,7 @@ def search_companies(request: SearchRequest, background: BackgroundTasks) -> dic
         raise
     except Exception as exc:  # noqa: BLE001
         logger.exception("La consulta falló")
-        raise HTTPException(status_code=502, detail="La consulta no pudo completarse. Intenta nuevamente en unos segundos.") from exc
+        raise HTTPException(status_code=502, detail=_error_consulta("La consulta no pudo completarse.")) from exc
 
 
 @app.get("/api/companies/{nit}")
@@ -326,7 +453,7 @@ def company_detail(nit: str, background: BackgroundTasks) -> dict[str, Any]:
         raise
     except Exception as exc:  # noqa: BLE001
         logger.exception("La ficha falló")
-        raise HTTPException(status_code=502, detail="No fue posible consultar la ficha de la empresa.") from exc
+        raise HTTPException(status_code=502, detail=_error_consulta("No fue posible consultar la ficha de la empresa.")) from exc
     if frame.empty:
         raise HTTPException(status_code=404, detail="No encontramos una empresa con ese NIT.")
     frame = _drop_contact_columns(frame)
@@ -380,7 +507,7 @@ def export_companies(request: SearchRequest, background: BackgroundTasks) -> Str
         raise
     except Exception as exc:  # noqa: BLE001
         logger.exception("La exportación falló")
-        raise HTTPException(status_code=502, detail="No fue posible preparar el Excel. Intenta nuevamente.") from exc
+        raise HTTPException(status_code=502, detail=_error_consulta("No fue posible preparar el Excel.")) from exc
 
 
 @app.get("/api/glossary")

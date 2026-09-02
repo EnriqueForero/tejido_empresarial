@@ -5,3 +5,6 @@ pandas==2.2.3
 openpyxl==3.1.5
 XlsxWriter==3.2.9
 snowflake-snowpark-python==1.25.0
+# «cryptography» llega como dependencia del conector de Snowflake y se usa para
+# normalizar la llave privada (PEM/DER, cifrada o no). No se fija su versión
+# para no entrar en conflicto con la que exige el conector.

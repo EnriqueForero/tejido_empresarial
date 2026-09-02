@@ -9,12 +9,14 @@ const Consultar = lazy(() => import('./paginas/Consultar'));
 const Glosario = lazy(() => import('./paginas/Glosario'));
 const Metodologia = lazy(() => import('./paginas/Metodologia'));
 const FichaEmpresa = lazy(() => import('./paginas/FichaEmpresa'));
+const Estado = lazy(() => import('./paginas/Estado'));
 
 const TITULOS: Record<string, string> = {
   '/': 'Inicio',
   '/consultar': 'Consultar empresas',
   '/glosario': 'Glosario de variables',
   '/metodologia': 'Metodología y alcance',
+  '/estado': 'Estado del aplicativo',
 };
 
 /** Al cambiar de página: título del documento, scroll arriba y foco en el contenido. */
@@ -60,6 +62,7 @@ export default function App() {
               <Route path="/glosario" element={<Glosario />} />
               <Route path="/metodologia" element={<Metodologia />} />
               <Route path="/empresa/:nit" element={<FichaEmpresa />} />
+              <Route path="/estado" element={<Estado />} />
               <Route path="*" element={<Inicio />} />
             </Routes>
           </div>

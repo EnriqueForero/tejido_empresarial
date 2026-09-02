@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import logoBlanco from '../assets/logos/procolombia-blanco.svg';
 import { useBloquearScroll, useTrampaFoco } from '../hooks';
+import { InsigniaEstado, useEstadoDatos } from './EstadoConexion';
 
 export const RUTAS: Array<{ a: string; t: string; d: string }> = [
   { a: '/', t: 'Inicio', d: 'El aplicativo en una mirada' },
@@ -21,6 +22,7 @@ export function Encabezado() {
   const botonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLElement>(null);
   const { pathname } = useLocation();
+  const { estado } = useEstadoDatos();
 
   useEffect(() => {
     let marco = 0;
@@ -77,12 +79,15 @@ export function Encabezado() {
                 {ruta.t}
               </NavLink>
             ))}
+            <InsigniaEstado estado={estado} />
             <Link to="/consultar" className="boton boton--cinta boton--chico encabezado__cta">
               Buscar empresas
             </Link>
           </nav>
 
-          <button
+          <div className="encabezado__movil">
+            <InsigniaEstado estado={estado} punto />
+            <button
             ref={botonRef}
             type="button"
             className="encabezado__hamburguesa"
@@ -94,7 +99,8 @@ export function Encabezado() {
             <span aria-hidden="true" />
             <span aria-hidden="true" />
             <span aria-hidden="true" />
-          </button>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -125,6 +131,9 @@ export function Encabezado() {
             </li>
           ))}
         </ul>
+        <div className="menu-movil__estado">
+          <InsigniaEstado estado={estado} />
+        </div>
         <p className="menu-movil__pie">Tejido Empresarial · Gerencia de Inteligencia Comercial · ProColombia</p>
       </nav>
     </>

@@ -20,6 +20,7 @@
 .encabezado__enlace--activo::after { transform: scaleX(1); }
 .encabezado__cta { margin-left: 10px; }
 
+.encabezado__movil { display: none; align-items: center; gap: 10px; }
 .encabezado__hamburguesa { display: none; position: relative; width: 44px; height: 44px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 10px; cursor: pointer; flex: 0 0 auto; }
 .encabezado__hamburguesa span { position: absolute; left: 11px; right: 11px; height: 2px; border-radius: 2px; background: #fff; transition: transform var(--transicion-lenta), opacity var(--transicion), top var(--transicion-lenta); }
 .encabezado__hamburguesa span:nth-child(1) { top: 14px; }
@@ -43,6 +44,7 @@
 
 @media (max-width: 1079px) {
   .encabezado__nav { display: none; }
+  .encabezado__movil { display: flex; }
   .encabezado__hamburguesa { display: block; }
 }
 @media (min-width: 1080px) { .menu-movil { display: none !important; } }

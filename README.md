@@ -13,6 +13,7 @@ Esta versión reemplaza la interfaz Streamlit por **React 19 + TypeScript (Vite 
 | Resultados | Vista previa legible (15 variables clave), orden por columna, búsqueda local, selector de columnas, 25/50/100 por página; tarjetas en celular. |
 | Ficha de empresa | `/empresa/<NIT>`: indicadores, gráfico de exportaciones por periodo y las 63 variables agrupadas por secciones. |
 | Descarga | Excel en un solo paso con hojas `Resumen`, `Ficha_Empresa` (una empresa), `Vista_Principal`, `Datos_Completos` y `Diccionario`; nombres descriptivos con fecha y criterio. |
+| Estado | `/estado`: indica si el aplicativo usa datos reales o de demostración, permite probar la conexión y muestra el diagnóstico paso a paso. Pastilla de color siempre visible en el encabezado. |
 | Glosario | Lectura estructurada del archivo institucional de variables con búsqueda, secciones, fuentes y uso en el aplicativo. Descarga del original. |
 | Metodología | Fuentes y cortes, definiciones clave, alcance y límites, guía de transferencia. Descarga del documento metodológico. |
 | Diseño | Sistema visual de la familia digital ProColombia (Célula de IA · GIC): azul noche `#011627`, ámbar `#FFA400`, Jost / Maven Pro / IBM Plex Mono, logos MinCIT · ProColombia, movimiento respetuoso de `prefers-reduced-motion`. |
@@ -81,6 +82,9 @@ Copie `.env.example` a `.env` sólo en desarrollo. En Railway configure las vari
 | `EXPORT_INCLUDE_CONTACT_FIELDS` | No | `true` por defecto (igual que Streamlit). `false` retira dirección, teléfono, correo y representante legal. |
 | `MAX_REQUEST_BYTES` | No | Tamaño máximo del cuerpo HTTP (2 MB por defecto). |
 | `APP_BASIC_USER`, `APP_BASIC_PASSWORD` | No | Si se configuran ambas, todo el aplicativo pide usuario y contraseña (HTTP Basic). Vacías = acceso abierto, como el original. |
+| `APP_DIAG_TOKEN` | No | Abre `/api/diagnostico` en producción sin HTTP Basic: `/api/diagnostico?token=…`. |
+| `LOG_LEVEL` | No | `INFO` por defecto. Los registros salen por stdout (visibles en Railway). |
+| `SF_LOGIN_TIMEOUT`, `SF_NETWORK_TIMEOUT` | No | Segundos máximos para conectar (30) y para cada operación (60). |
 
 \* Configure al menos una llave (Base64 o ruta). Conversión a Base64: PowerShell `[Convert]::ToBase64String([IO.File]::ReadAllBytes("rsa_key_1.der"))` · macOS/Linux `base64 -w 0 rsa_key_1.der`.
 
@@ -106,6 +110,9 @@ Railway redespliega solo en cada push.
 5. Verifique `https://SU-DOMINIO/api/health?deep=true` (prueba real de Snowflake), una búsqueda y una descarga.
 
 La guía paso a paso, con la lista de verificación, está en [`GUIA_TRANSFERENCIA.md`](GUIA_TRANSFERENCIA.md).
+Si el aplicativo abre pero **no hace búsquedas**, entre a `/estado` dentro del propio aplicativo: dice si está
+conectado, permite probar la conexión y muestra el paso exacto que falla. El procedimiento completo, escrito para
+alguien sin experiencia en despliegues, está en [`DIAGNOSTICO_RAILWAY.md`](DIAGNOSTICO_RAILWAY.md).
 
 ## Actualizar los cortes de información
 
@@ -114,7 +121,7 @@ Cuando llegue un nuevo mes o se cierre un año, edite **sólo** `backend/config.
 ## Calidad y pruebas
 
 ```bash
-# Backend: 17 pruebas (API en modo demo, SQL, Excel, glosario)
+# Backend: 35 pruebas (API en modo demo, SQL, Excel, glosario, llaves, estado y diagnóstico)
 pip install -r requirements-dev.txt
 pytest -q
 
@@ -138,7 +145,8 @@ Herramientas adicionales en `scripts/`:
 
 | Método | Ruta | Propósito |
 |---|---|---|
-| `GET` | `/api/health` (`?deep=true`) | Estado del servicio; con `deep` prueba Snowflake. |
+| `GET` | `/api/health` (`?deep=true`) | Estado del servicio, conector, variables faltantes; con `deep` prueba Snowflake. |
+| `GET` | `/api/diagnostico` | Revisión paso a paso: entorno → conector → llave → sesión → tablas, con el error real de cada paso. Protegido en producción. |
 | `GET` | `/api/metadata` | Filtros, columnas, secciones, fuentes, cortes y límites. |
 | `POST` | `/api/filters/options` | Opciones dependientes según las selecciones actuales. |
 | `POST` | `/api/companies/search` | Vista previa paginada (15 variables clave). |

@@ -1,4 +1,4 @@
-import type { DefinicionFiltro, Ficha, Metadatos, RespuestaBusqueda, RespuestaGlosario, Salud, SolicitudBusqueda } from './tipos';
+import type { DefinicionFiltro, Diagnostico, Ficha, Metadatos, RespuestaBusqueda, RespuestaGlosario, Salud, SolicitudBusqueda } from './tipos';
 
 type CuerpoError = { detail?: string | Array<{ msg?: string }> };
 
@@ -46,6 +46,10 @@ async function json<T>(url: string, init?: RequestInit): Promise<T> {
 
 export const obtenerMetadatos = () => json<Metadatos>('/api/metadata');
 export const obtenerSalud = () => json<Salud>('/api/health');
+/** Prueba real contra Snowflake: puede tardar unos segundos. */
+export const probarConexion = () => json<Salud>('/api/health?deep=true');
+export const obtenerDiagnostico = (token = '') =>
+  json<Diagnostico>(`/api/diagnostico${token ? `?token=${encodeURIComponent(token)}` : ''}`);
 export const obtenerGlosario = () => json<RespuestaGlosario>('/api/glossary');
 export const obtenerFicha = (nit: string, signal?: AbortSignal) => json<Ficha>(`/api/companies/${encodeURIComponent(nit)}`, { signal });
 

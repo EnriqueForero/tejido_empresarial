@@ -102,3 +102,60 @@
 .ficha-acciones p { font-size: 12.5px; color: var(--texto-suave); }
 @media (max-width: 1080px) { .ficha-cuerpo { grid-template-columns: 1fr; } .ficha-lateral { position: static; } .ficha-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .seccion-ficha dl { grid-template-columns: 1fr; } .seccion-ficha dl > div:nth-child(odd) { border-right: 0; } .ficha-kpis { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   Estado del aplicativo (/estado) e insignia de conexión
+   ========================================================================== */
+.insignia { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; font-family: var(--fuente-display); font-size: 12.5px; font-weight: 500; text-decoration: none; white-space: nowrap; border: 1px solid; transition: filter var(--transicion); }
+.insignia:hover { filter: brightness(1.12); }
+.insignia__punto { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+.insignia--reales { color: #b6ef98; border-color: rgba(126, 217, 87, 0.45); background: rgba(126, 217, 87, 0.12); }
+.insignia--demostración { color: #9fdcfb; border-color: rgba(79, 195, 247, 0.45); background: rgba(79, 195, 247, 0.12); }
+.insignia--problema { color: var(--cinta-clara); border-color: rgba(255, 195, 92, 0.5); background: rgba(255, 164, 0, 0.14); }
+.insignia--sin-verificar { color: #d7dee8; border-color: rgba(215, 222, 232, 0.4); background: rgba(215, 222, 232, 0.1); }
+.insignia--sin-conexion, .insignia--desconocido { color: #f2b8c2; border-color: rgba(226, 122, 140, 0.5); background: rgba(200, 16, 46, 0.16); }
+.insignia--compacta { font-size: 11.5px; padding: 3px 9px; }
+.insignia--punto { padding: 0; width: 26px; height: 26px; justify-content: center; }
+.insignia--punto .insignia__punto { width: 10px; height: 10px; }
+.menu-movil__estado { max-width: 560px; margin: 18px auto 0; }
+
+.estado { padding-bottom: 72px; }
+.estado-tarjeta { display: flex; gap: 16px; align-items: flex-start; padding: 24px 26px; border-left: 6px solid var(--borde); }
+.estado-tarjeta h2 { font-size: 24px; }
+.estado-tarjeta p { color: var(--texto-suave); margin-top: 6px; max-width: 70ch; }
+.estado-tarjeta__punto { width: 16px; height: 16px; border-radius: 50%; margin-top: 6px; flex: 0 0 auto; background: var(--borde); }
+.estado-tarjeta--reales { border-left-color: var(--ok); }
+.estado-tarjeta--reales .estado-tarjeta__punto { background: var(--ok); box-shadow: 0 0 0 4px rgba(21, 122, 74, 0.16); }
+.estado-tarjeta--demostración { border-left-color: var(--azul); }
+.estado-tarjeta--demostración .estado-tarjeta__punto { background: var(--azul); box-shadow: 0 0 0 4px rgba(31, 79, 163, 0.16); }
+.estado-tarjeta--problema { border-left-color: var(--cinta); }
+.estado-tarjeta--problema .estado-tarjeta__punto { background: var(--cinta); box-shadow: 0 0 0 4px rgba(255, 164, 0, 0.22); }
+.estado-tarjeta--sin-verificar { border-left-color: var(--texto-suave); }
+.estado-tarjeta--sin-verificar .estado-tarjeta__punto { background: var(--texto-suave); box-shadow: 0 0 0 4px rgba(90, 106, 125, 0.14); }
+.estado-tarjeta--sin-conexion, .estado-tarjeta--desconocido { border-left-color: var(--alerta); }
+.estado-tarjeta--sin-conexion .estado-tarjeta__punto, .estado-tarjeta--desconocido .estado-tarjeta__punto { background: var(--alerta); box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.14); }
+
+.estado-pasos ol { margin: 12px 0 0; padding-left: 22px; display: grid; gap: 10px; }
+.estado-pasos li { line-height: 1.55; }
+.estado-detalle { margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.estado-detalle > div { padding: 12px 14px; border-radius: 10px; background: var(--papel); border: 1px solid var(--borde-suave); min-width: 0; }
+.estado-detalle dt { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texto-suave); }
+.estado-detalle dd { margin: 4px 0 0; font-size: 14px; overflow-wrap: anywhere; }
+.estado-falta { color: var(--alerta); font-weight: 600; }
+.estado-token { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.estado-sugerencia { margin-top: 14px; padding: 14px 16px; border-radius: 10px; background: var(--aviso-fondo); color: var(--aviso-texto); font-size: 14px; line-height: 1.55; }
+
+.pasos-diag { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 8px; }
+.paso-diag { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--borde-suave); background: #fff; }
+.paso-diag--ok { border-left: 4px solid var(--ok); }
+.paso-diag--falla { border-left: 4px solid var(--alerta); background: #fffafb; }
+.paso-diag__marca { width: 22px; height: 22px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+.paso-diag--ok .paso-diag__marca { background: var(--ok-fondo); color: var(--ok); }
+.paso-diag--falla .paso-diag__marca { background: var(--alerta-fondo); color: var(--alerta); }
+.paso-diag strong { font-family: var(--fuente-display); font-size: 14.5px; }
+.paso-diag__tiempo { margin-left: 8px; font-size: 11px; color: var(--texto-suave); }
+.paso-diag__error { margin-top: 6px; font-size: 13px; color: #7a0a1c; overflow-wrap: anywhere; }
+.paso-diag__detalle { margin: 6px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--texto-suave); display: grid; gap: 3px; }
+.paso-diag__detalle .dato { color: var(--texto); }
+.paso-diag__texto { margin-top: 6px; font-size: 12.5px; color: var(--texto-suave); overflow-wrap: anywhere; }
+@media (max-width: 600px) { .estado-tarjeta { padding: 18px; } .estado-token { grid-template-columns: 1fr; } }

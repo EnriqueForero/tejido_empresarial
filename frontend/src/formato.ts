@@ -64,3 +64,10 @@ export function etiquetaCorta(columna: string): string {
 export function limpiarNit(valor: string): string {
   return valor.replace(/\D/g, '');
 }
+
+/** Fecha y hora local legible a partir de un ISO 8601 (para la página de estado). */
+export function fechaHora(iso: string): string {
+  const fecha = new Date(iso);
+  if (Number.isNaN(fecha.getTime())) return iso;
+  return fecha.toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' });
+}

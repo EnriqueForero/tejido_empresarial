@@ -185,7 +185,7 @@ button { cursor: pointer; }
 .casilla { width: 17px; height: 17px; min-height: 17px; margin: 2px 0 0; padding: 0; accent-color: var(--azul); flex: 0 0 auto; }
 
 /* ---------- avisos ---------- */
-.aviso { border-radius: var(--radio-chico); padding: 12px 14px; font-size: 13.5px; border: 1px solid; display: flex; gap: 10px; align-items: flex-start; }
+.aviso { border-radius: var(--radio-chico); padding: 12px 14px; font-size: 13.5px; border: 1px solid; line-height: 1.55; }
 .aviso--advertencia { background: var(--aviso-fondo); border-color: var(--aviso-borde); color: var(--aviso-texto); }
 .aviso--error { background: var(--alerta-fondo); border-color: #e4a5b0; color: #7a0a1c; }
 .aviso--info { background: var(--azul-claro); border-color: #c3d4ee; color: #1c3d6e; }

@@ -13,6 +13,7 @@ tejido-empresarial-react/
 ├── scripts/               utilidades: reformatear Excel plano, vista previa de libros
 ├── tests/                 pruebas automáticas del backend (pytest)
 ├── notebooks/             demo efímera en Colab y publicación a GitHub
+├── DIAGNOSTICO_RAILWAY.md diagnóstico cuando el aplicativo no consulta datos
 ├── setup/                 cuadernos de creación/carga de la base (sin cambios)
 ├── legado_streamlit/      aplicativo Streamlit original, íntegro, sólo como referencia
 ├── Dockerfile             imagen única: compila React y ejecuta FastAPI
@@ -51,12 +52,16 @@ notebook aborta si el tag ya existe o si el CHANGELOG no menciona la versión.
    - `SF_PRIVATE_KEY_B64_1` con la llave RSA en Base64 (PowerShell: `[Convert]::ToBase64String([IO.File]::ReadAllBytes("rsa_key_1.der"))`). Si la llave tiene frase, `SF_PRIVATE_KEY_PASSPHRASE_1`.
    - Opcional: `SF_PRIVATE_KEY_B64_2` (respaldo), `PUBLIC_ORIGIN` (URL pública), `APP_BASIC_USER` + `APP_BASIC_PASSWORD` (protege todo el aplicativo con usuario y contraseña).
 4. **Dominio.** *Settings → Networking → Generate Domain* (o dominio propio).
-5. **Verificación.**
-   - `https://SU-DOMINIO/api/health` → `{"status":"ok", "data_connection":"configured"}`.
-   - `https://SU-DOMINIO/api/health?deep=true` → `"data_connection":"connected"` (prueba real contra Snowflake).
-   - Abra la portada, haga una búsqueda por razón social y descargue un Excel.
+5. **Verificación.** Abra `https://SU-DOMINIO/estado`. La página comprueba la conexión sola y responde con una de cuatro
+   frases: *Datos reales*, *Modo demostración*, *Conexión con problemas* o *Sin conexión a datos*. Si no es *Datos reales*,
+   ahí mismo indica qué corregir en Railway. Después abra la portada, haga una búsqueda por razón social y descargue un Excel.
 
-Si `deep=true` responde 503, revise las variables `SF_*` y la llave: el mensaje no expone detalles por seguridad; los registros del servicio en Railway sí.
+Cuando el estado no sea *Datos reales*, pulse **«Ver diagnóstico detallado»**: recorre entorno → conector → llave → sesión →
+tablas y señala el paso exacto que falla con el mensaje real de Snowflake. El procedimiento completo, escrito paso a paso para
+alguien sin experiencia en despliegues, está en [`DIAGNOSTICO_RAILWAY.md`](DIAGNOSTICO_RAILWAY.md).
+
+Para quien prefiera las direcciones técnicas: `/api/health` (estado rápido), `/api/health?deep=true` (prueba real contra
+Snowflake) y `/api/diagnostico` (paso a paso, protegido con HTTP Basic o `APP_DIAG_TOKEN`).
 
 ## 4. Operación diaria
 
@@ -88,9 +93,9 @@ Tras cualquier cambio: `cd frontend && npm run build` (o simplemente desplegar; 
 
 ## 7. Lista de verificación de entrega
 
-- [ ] `pytest -q` → 17 pruebas aprobadas.
+- [ ] `pytest -q` → 35 pruebas aprobadas.
 - [ ] `cd frontend && npm run build` sin errores.
-- [ ] `/api/health?deep=true` → `connected` en Railway.
+- [ ] `/estado` en Railway muestra «Datos reales».
 - [ ] Búsqueda por filtros con opciones dependientes (elegir departamento reduce municipios).
 - [ ] Búsqueda por razón social, NIT y lote de NIT.
 - [ ] Ficha de empresa abre desde la tabla y desde la URL `/empresa/<NIT>`.

@@ -12,7 +12,7 @@ Guidance for Claude Code when working in this repository.
 # Backend (Python 3.11; 3.10 works)
 pip install -r requirements-dev.txt
 APP_DEMO_MODE=true uvicorn backend.main:app --reload --port 8000   # synthetic data, no Snowflake
-pytest -q                                                           # 17 tests
+pytest -q                                                           # 35 tests
 
 # Frontend (Node 22)
 cd frontend && npm ci && npm run dev      # http://localhost:5173, proxies /api → :8000
@@ -41,6 +41,9 @@ backend/
   queries.py    SQL generation (allowlisted columns, sql_literal escaping). Same semantics as the original:
                 general filters on table A, export filters via NIT subquery on BIENES_Y_SERVICIOS_P (B).
   database.py   SnowflakeService: RSA key auth, key rotation (JWT error → fallback key), retries, log_event.
+                normalizar_llave() accepts base64-of-DER (whitespace tolerated), raw PEM, base64-of-PEM and
+                .der/.p8 files; decrypts with SF_PRIVATE_KEY_PASSPHRASE_N and hands the connector plain PKCS8 DER.
+                diagnostico() walks entorno → conector → llave → sesión → tablas and returns the real error per step.
   exporter.py   xlsxwriter workbook: Resumen · Ficha_Empresa (1 company) · Vista_Principal · Datos_Completos · Diccionario.
   glossary.py   Reads resources/2026_09_01_Glosario_variables_Aplicativo.xlsx (sheet Explicacion_Variables);
                 adds SUPPLEMENTARY_DEFINITIONS for derived range columns; links variables to filters/preview.
@@ -53,7 +56,7 @@ frontend/src/
   api.ts, tipos.ts, formato.ts, hooks.ts
   componentes/               Encabezado, Pie, Interfaz (Revelar, ContadorAnimado, Aviso, Ayuda…), TejidoPortada (hero SVG),
                              ModoBusqueda, PanelFiltros, SelectorFiltro, CargaNits, Resultados, DescargaExcel
-  paginas/                   Inicio, Consultar, Glosario, Metodologia, FichaEmpresa
+  paginas/                   Inicio, Consultar, Glosario, Metodologia, FichaEmpresa, Estado
   estilos/                   base.css (tokens, buttons, cards), estructura.css (header/footer/menu), portada.css,
                              consulta.css, resultados.css, paginas.css
 
@@ -72,6 +75,14 @@ notebooks/      Colab: ephemeral demo + GitHub publisher. The publisher's Celda 
 - Contact fields are included in exports by default (as in Streamlit); `EXPORT_INCLUDE_CONTACT_FIELDS=false` removes them.
 - Access is open unless `APP_BASIC_USER` and `APP_BASIC_PASSWORD` are both set.
 - Excel: identifiers as text, COP without decimals, FOB USD with 2 decimals, navy header + amber accent, frozen panes, autofilter, print setup. Tests in `tests/test_exporter.py` pin this structure.
+
+## Troubleshooting a deployment
+
+`/api/health` reports connector presence, version, missing `SF_*` vars and key sources.
+`/api/diagnostico` (Basic auth, `APP_DIAG_TOKEN`, or APP_ENV=development) runs the full chain and
+returns the first failing step plus a concrete recommendation.
+The `/estado` page renders all of that for non-technical users (header badge + «probar conexión» +
+step checklist); `/estado?token=…` auto-runs the diagnostic. See `DIAGNOSTICO_RAILWAY.md`.
 
 ## Snowflake objects (unchanged)
 

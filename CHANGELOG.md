@@ -7,6 +7,27 @@ Para un aplicativo de este tipo: **PATCH** corrige textos, estilos o errores; **
 
 ---
 
+## [3.3.0] — 2026-09-02
+
+### Agregado
+- **Página «Estado del aplicativo» (`/estado`)**: dice en una frase si el aplicativo consulta datos reales o de demostración, con una pastilla de color en el encabezado visible desde cualquier página (en móvil, un punto de color junto al menú). Al abrirse comprueba la conexión sola, así que da un veredicto sin que nadie pulse nada. Incluye botones para volver a probar y para ver el diagnóstico paso a paso, el detalle del servicio (versión, origen configurado, última conexión correcta, conector, llave, variables faltantes) y las instrucciones concretas para Railway. Acepta `/estado?token=…` para ejecutar el diagnóstico automáticamente.
+- **`/api/health` distingue «configurado» de «conectado»**: el servicio sólo afirma que está conectado después de que Snowflake haya respondido de verdad, y devuelve la marca de tiempo de esa última conexión correcta (`verified`, `verified_at`). Antes bastaba con tener las variables puestas para mostrarse en verde.
+- **`/api/diagnostico`**: recorre paso a paso entorno → conector → llave → sesión → tablas y devuelve el error real de cada paso, sin exponer secretos, con una recomendación concreta para el primero que falla. En producción exige autenticación HTTP Basic o `APP_DIAG_TOKEN`.
+- `/api/health` ahora informa si el conector está instalado, su versión, qué variables `SF_*` faltan y de dónde sale la llave.
+- `DIAGNOSTICO_RAILWAY.md`: guía de verificación y solución de fallos de conexión en Railway.
+- Variables `APP_DIAG_TOKEN` y `LOG_LEVEL`.
+- Pruebas: 18 nuevas sobre normalización de llaves, reporte de configuración, estados del health y el endpoint de diagnóstico (35 en total).
+- El build de validación del notebook de publicación instala `cryptography` y, si falla, imprime el final del registro con la causa exacta en lugar de un «Comando falló (1)» sin contexto.
+
+### Corregido
+- **La llave privada se normaliza antes de usarla.** Antes, un Base64 con un salto de línea o un espacio al final —lo más frecuente al pegar variables en Railway— hacía fallar la conexión con un mensaje genérico. Ahora se aceptan Base64 con espacios y saltos, PEM pegado directamente, Base64 de un PEM y archivos `.der`/`.p8`; si la llave está cifrada se descifra con la frase configurada y se entrega al conector en DER PKCS8.
+- Los errores de conexión dejan de ser genéricos: el mensaje incluye la causa real reportada por Snowflake (sin secretos) y apunta a `/api/diagnostico`.
+- Los registros del servicio se envían explícitamente a la salida estándar para que aparezcan en Railway.
+- Los avisos de la interfaz usaban una caja flexible que separaba las palabras en negrita; ahora el texto fluye normalmente.
+- El estado de la conexión se comparte con `useSyncExternalStore`: antes, si la página `/estado` llegaba por carga diferida en el momento justo, se quedaba indefinidamente en «Consultando el estado…» mientras el encabezado ya mostraba el resultado.
+- El health profundo hace un solo intento (antes reintentaba tres veces con espera creciente y tardaba casi medio minuto en responder que no había conexión).
+- Las pruebas se omiten con elegancia cuando el entorno no trae `cryptography` o el conector de Snowflake, en lugar de interrumpir toda la ejecución.
+
 ## [3.2.0] — 2026-09-02
 
 ### Agregado

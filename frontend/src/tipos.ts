@@ -39,7 +39,7 @@ export type Metadatos = {
   title: string;
   version: string;
   demo: boolean;
-  data_connection: 'demo' | 'configured' | 'missing_configuration' | 'connected';
+  data_connection: 'demo' | 'configured' | 'missing_configuration' | 'connected' | 'error';
   preview_columns: string[];
   export_columns: string[];
   column_sections: Array<{ title: string; columns: string[] }>;
@@ -92,4 +92,33 @@ export type Salud = {
   data_connection: Metadatos['data_connection'];
   access_control: 'basic' | 'open';
   frontend_built: boolean;
+  demo_mode: boolean;
+  snowflake: {
+    connector_installed: boolean;
+    connector_version: string | null;
+    missing_variables: string[];
+    key_sources: string[];
+    connection_error: boolean;
+    verified: boolean;
+    verified_at: string | null;
+  };
+};
+
+export type PasoDiagnostico = {
+  paso: string;
+  descripcion: string;
+  ok: boolean;
+  detalle?: unknown;
+  error?: string;
+  tipo_error?: string;
+  segundos: number;
+};
+
+export type Diagnostico = {
+  modo: 'demo' | 'snowflake';
+  version?: string;
+  todo_ok?: boolean;
+  resumen: string;
+  siguiente_paso: string;
+  pasos: PasoDiagnostico[];
 };

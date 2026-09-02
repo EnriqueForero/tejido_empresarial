@@ -76,6 +76,7 @@ export function Pie() {
                 {ruta.t}
               </Link>
             ))}
+            <Link to="/estado">Estado del aplicativo</Link>
           </nav>
         </div>
       </div>

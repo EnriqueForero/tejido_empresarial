@@ -15,7 +15,21 @@ client = TestClient(app)
 def test_health_and_metadata() -> None:
     health = client.get("/api/health")
     assert health.status_code == 200
-    assert health.json()["data_connection"] == "demo"
+    cuerpo = health.json()
+    assert cuerpo["data_connection"] == "demo"
+    assert cuerpo["demo_mode"] is True
+    # El health dice si el conector está instalado y qué variables faltan.
+    assert set(cuerpo["snowflake"]) == {
+        "connector_installed",
+        "connector_version",
+        "missing_variables",
+        "key_sources",
+        "connection_error",
+        "verified",
+        "verified_at",
+    }
+    # En modo demostración nunca se afirma que la conexión esté verificada.
+    assert cuerpo["snowflake"]["verified"] is False
 
     metadata = client.get("/api/metadata")
     assert metadata.status_code == 200
@@ -104,6 +118,15 @@ def test_glossary_and_formatted_export() -> None:
     assert response.headers["content-type"].startswith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     assert response.content.startswith(b"PK")
     assert "ProColombia_TejidoEmpresarial_NIT_900000001_" in response.headers["x-export-filename"]
+
+
+def test_diagnostico_en_modo_demostracion() -> None:
+    respuesta = client.get("/api/diagnostico")
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    assert cuerpo["modo"] == "demo"
+    assert "demostración" in cuerpo["resumen"]
+    assert "APP_DEMO_MODE" in cuerpo["siguiente_paso"]
 
 
 def test_spa_fallback_and_unknown_routes() -> None:
