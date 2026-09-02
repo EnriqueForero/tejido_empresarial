@@ -7,6 +7,18 @@ Para un aplicativo de este tipo: **PATCH** corrige textos, estilos o errores; **
 
 ---
 
+## [3.3.1] — 2026-09-02
+
+### Corregido
+- **Las consultas fallaban en Railway aunque la conexión estuviera bien.** La imagen se construía sin `pyarrow`, así que `to_pandas()` del conector lanzaba «Optional dependency: pandas is not installed» y devolvían 502 el panel de filtros, la búsqueda, la ficha de empresa y la descarga. El aplicativo Streamlit original sí traía `pyarrow==17.0.0`. Ahora `requirements-api.txt` instala `snowflake-snowpark-python[pandas]`.
+- **El aplicativo ya no depende de esa pieza opcional.** Si `pyarrow` falta, los resultados se arman a partir de las filas (`collect()`), como hacía el original; los importes se convierten a número para que el Excel conserve sus formatos. La página de estado indica cuál de las dos vías está en uso.
+- **Los errores dicen la causa.** Antes un fallo de consulta respondía «No fue posible…» sin más; ahora incluye el mensaje real de Snowflake, ya redactado, de modo que se puede corregir sin abrir el diagnóstico.
+- **El panel de filtros avisa cuando no pudo traer las opciones.** Antes los desplegables quedaban vacíos y el aviso aparecía lejos, debajo de los resultados: parecía que el aplicativo no servía.
+
+### Agregado
+- `/api/health` y el diagnóstico informan si el conector puede devolver tablas por la vía rápida (`pandas_arrow`).
+- Pruebas: 5 nuevas que fijan la lectura de resultados con y sin `pyarrow`, el registro de la causa de un fallo y su limpieza tras una consulta correcta (40 en total).
+
 ## [3.3.0] — 2026-09-02
 
 ### Agregado

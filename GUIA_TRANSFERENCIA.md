@@ -93,7 +93,7 @@ Tras cualquier cambio: `cd frontend && npm run build` (o simplemente desplegar; 
 
 ## 7. Lista de verificación de entrega
 
-- [ ] `pytest -q` → 35 pruebas aprobadas.
+- [ ] `pytest -q` → 40 pruebas aprobadas.
 - [ ] `cd frontend && npm run build` sin errores.
 - [ ] `/estado` en Railway muestra «Datos reales».
 - [ ] Búsqueda por filtros con opciones dependientes (elegir departamento reduce municipios).

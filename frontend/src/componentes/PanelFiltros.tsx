@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useBloquearScroll, useTrampaFoco } from '../hooks';
 import type { DefinicionFiltro } from '../tipos';
-import { Spinner } from './Interfaz';
+import { Aviso, Spinner } from './Interfaz';
 import { SelectorFiltro } from './SelectorFiltro';
 
 type Props = {
@@ -17,12 +17,13 @@ type Props = {
   alBuscar: () => void;
   cargando: boolean;
   cargandoOpciones: boolean;
+  errorOpciones: string;
   abiertoMovil: boolean;
   alCerrarMovil: () => void;
   totalActivos: number;
 };
 
-export function PanelFiltros({ definiciones, ordenGrupos, filtros, alCambiar, alLimpiar, alBuscar, cargando, cargandoOpciones, abiertoMovil, alCerrarMovil, totalActivos }: Props) {
+export function PanelFiltros({ definiciones, ordenGrupos, filtros, alCambiar, alLimpiar, alBuscar, cargando, cargandoOpciones, errorOpciones, abiertoMovil, alCerrarMovil, totalActivos }: Props) {
   const panelRef = useRef<HTMLElement>(null);
   const cerrarRef = useRef<HTMLButtonElement>(null);
   const [gruposCerrados, setGruposCerrados] = useState<Set<string>>(new Set());
@@ -92,6 +93,11 @@ export function PanelFiltros({ definiciones, ordenGrupos, filtros, alCambiar, al
             'Sin criterios: la consulta abarcará toda la base empresarial.'
           )}
         </div>
+        {errorOpciones && (
+          <div className="panel-filtros__error">
+            <Aviso tipo="error">{errorOpciones}</Aviso>
+          </div>
+        )}
         <div className="panel-filtros__cuerpo">
           {grupos.map(([grupo, items]) => {
             const activos = items.reduce((suma, item) => suma + (filtros[item.key]?.length ?? 0), 0);

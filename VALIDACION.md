@@ -1,4 +1,4 @@
-# Validación · Tejido Empresarial React 3.3.0
+# Validación · Tejido Empresarial React 3.3.1
 
 Fecha: 2 de septiembre de 2026. Entorno: Windows 11, Python 3.10.5 (venv), Node 22.23.2 (portable), Chrome headless para capturas.
 
@@ -6,7 +6,7 @@ Fecha: 2 de septiembre de 2026. Entorno: Windows 11, Python 3.10.5 (venv), Node 
 
 | Área | Resultado |
 |---|---|
-| `pytest -q` | 35 pruebas aprobadas: API en modo demo (metadatos, filtros dependientes, búsqueda por filtros/razón social/NIT/lote, ficha por NIT, glosario, exportación, SPA, rutas desconocidas, filtros no permitidos), generación SQL (listas blancas, escape, paginación, NIT sólo dígitos), Excel (estructura de hojas, paneles congelados, autofiltro, identificadores como texto, secciones de la ficha, estados del diccionario, nombres de archivo, neutralización de fórmulas). |
+| `pytest -q` | 40 pruebas aprobadas: API en modo demo (metadatos, filtros dependientes, búsqueda por filtros/razón social/NIT/lote, ficha por NIT, glosario, exportación, SPA, rutas desconocidas, filtros no permitidos), generación SQL (listas blancas, escape, paginación, NIT sólo dígitos), Excel (estructura de hojas, paneles congelados, autofiltro, identificadores como texto, secciones de la ficha, estados del diccionario, nombres de archivo, neutralización de fórmulas). |
 | `python -m compileall backend scripts` | Sin errores. |
 | `tsc -b` + `vite build` | Sin errores de tipos; bundle principal 266 kB (84 kB gzip) más páginas cargadas bajo demanda. |
 | Servidor real (uvicorn, `APP_DEMO_MODE=true`) | `/api/health`, `/api/metadata`, búsquedas, ficha, glosario y exportación responden correctamente; SPA servida desde FastAPI con cabeceras de seguridad. |
@@ -21,6 +21,9 @@ Fecha: 2 de septiembre de 2026. Entorno: Windows 11, Python 3.10.5 (venv), Node 
 | Página `/estado` en modo demostración | Insignia azul «Modo demostración» en el encabezado, tarjeta con la explicación, tres pasos para salir del modo demostración y detalle del servicio con los campos marcados «No aplica en modo demostración». |
 | Página `/estado` con Snowflake mal configurado | Al abrirla comprueba la conexión sola (sin pulsar nada) y en unos segundos pasa a «Conexión con problemas»; con `?token=…` ejecuta el diagnóstico y muestra `✓ Variables`, `✓ Conector`, `✓ Llave privada 1` y `✗ Sesión establecida con Snowflake` con el error real y la recomendación. El encabezado cambia a la insignia ámbar al mismo tiempo. |
 | Estado honesto de la conexión | Con todas las variables presentes pero sin ninguna consulta hecha, `/api/health` responde `configured` y la interfaz dice «Sin verificar»; sólo después de que Snowflake responde pasa a `connected` y «Datos reales». Cubierto por dos pruebas automáticas. |
+| Consulta contra el despliegue real | `POST /api/filters/options` y `POST /api/companies/search` en `tejidoempresarialreact-production.up.railway.app` respondían 502 con la conexión verificada. Reproducido el motivo: la imagen no traía `pyarrow`, así que `to_pandas()` del conector falla con «Optional dependency: pandas is not installed». Corregido en `requirements-api.txt` y con una vía alterna por filas. |
+| Lectura de resultados sin `pyarrow` | Cuatro pruebas con un resultado simulado: mismas columnas y filas por las dos vías, importes numéricos (para que el Excel aplique formato de moneda), columnas conservadas en un resultado vacío. |
+| Mensaje de error con la causa | Servidor en modo producción contra una cuenta inexistente: `POST /api/filters/options` responde «No fue posible cargar los filtros. Causa: … 290404 (08001) … Más detalle en la página /estado» y la interfaz lo muestra dentro del panel de filtros, junto a los desplegables vacíos. |
 | Insignia en móvil (390 px) | Punto de color junto al botón de menú, enlazado a `/estado`; la página completa se lee sin desbordamiento horizontal (`scrollWidth` = `innerWidth` = 375). |
 | Notebook de publicación | Ejecutada su lógica sin tocar GitHub: configuración, detección de ambigüedad entre dos copias del proyecto, sincronización de la versión en `frontend/package.json` y `backend/config.py`, disciplina de CHANGELOG, pre-flight (134 archivos · 2,9 MB), bloqueo de una llave `.der` y de un `.env`, detección de un token de GitHub incrustado, y los cuatro comandos de build reales (pip, pytest, `npm ci`, `npm run build`) en 92 s con limpieza posterior. |
 

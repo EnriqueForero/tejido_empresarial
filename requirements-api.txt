@@ -4,7 +4,12 @@ python-dotenv==1.0.1
 pandas==2.2.3
 openpyxl==3.1.5
 XlsxWriter==3.2.9
-snowflake-snowpark-python==1.25.0
+# El extra «pandas» arrastra pyarrow, que el conector necesita para devolver
+# resultados como DataFrame (Snowpark .to_pandas()). Sin él todas las consultas
+# que traen tabla fallan aunque la conexión esté bien. El aplicativo Streamlit
+# original lo traía como pyarrow==17.0.0; aquí se deja que pip resuelva la
+# versión compatible con el conector.
+snowflake-snowpark-python[pandas]==1.25.0
 # «cryptography» llega como dependencia del conector de Snowflake y se usa para
 # normalizar la llave privada (PEM/DER, cifrada o no). No se fija su versión
 # para no entrar en conflicto con la que exige el conector.

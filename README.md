@@ -121,7 +121,7 @@ Cuando llegue un nuevo mes o se cierre un año, edite **sólo** `backend/config.
 ## Calidad y pruebas
 
 ```bash
-# Backend: 35 pruebas (API en modo demo, SQL, Excel, glosario, llaves, estado y diagnóstico)
+# Backend: 40 pruebas (API en modo demo, SQL, Excel, glosario, llaves, estado y diagnóstico)
 pip install -r requirements-dev.txt
 pytest -q
 

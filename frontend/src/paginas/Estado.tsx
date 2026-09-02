@@ -237,6 +237,14 @@ export default function Estado() {
                     <dd>{salud.snowflake.connector_installed ? `Instalado (versión ${salud.snowflake.connector_version ?? '—'})` : 'No instalado'}</dd>
                   </div>
                   <div>
+                    <dt>Lectura de resultados</dt>
+                    <dd>
+                      {salud.snowflake.pandas_arrow
+                        ? 'Directa (pyarrow instalado)'
+                        : 'Por filas: la imagen no trae pyarrow, las consultas grandes van más lentas'}
+                    </dd>
+                  </div>
+                  <div>
                     <dt>Llave configurada</dt>
                     <dd className="dato">
                       {salud.snowflake.key_sources.length

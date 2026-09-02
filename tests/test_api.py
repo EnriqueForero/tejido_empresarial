@@ -22,6 +22,7 @@ def test_health_and_metadata() -> None:
     assert set(cuerpo["snowflake"]) == {
         "connector_installed",
         "connector_version",
+        "pandas_arrow",
         "missing_variables",
         "key_sources",
         "connection_error",

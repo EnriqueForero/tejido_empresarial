@@ -96,6 +96,7 @@ export type Salud = {
   snowflake: {
     connector_installed: boolean;
     connector_version: string | null;
+    pandas_arrow: boolean;
     missing_variables: string[];
     key_sources: string[];
     connection_error: boolean;

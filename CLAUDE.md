@@ -12,7 +12,7 @@ Guidance for Claude Code when working in this repository.
 # Backend (Python 3.11; 3.10 works)
 pip install -r requirements-dev.txt
 APP_DEMO_MODE=true uvicorn backend.main:app --reload --port 8000   # synthetic data, no Snowflake
-pytest -q                                                           # 35 tests
+pytest -q                                                           # 40 tests
 
 # Frontend (Node 22)
 cd frontend && npm ci && npm run dev      # http://localhost:5173, proxies /api → :8000

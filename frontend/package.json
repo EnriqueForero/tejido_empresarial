@@ -1,7 +1,7 @@
 {
   "name": "tejido-empresarial-procolombia",
   "private": true,
-  "version": "3.3.0",
+  "version": "3.3.1",
   "type": "module",
   "description": "Aplicativo de Tejido Empresarial de ProColombia para los ejes de Exportaciones, Inversión y Turismo. Frontend React + TypeScript (Vite).",
   "scripts": {

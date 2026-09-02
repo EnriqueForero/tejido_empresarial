@@ -185,6 +185,8 @@ def _drop_contact_columns(frame: pd.DataFrame) -> pd.DataFrame:
     return frame.drop(columns=[column for column in CONTACT_COLUMNS if column in frame.columns])
 
 
+# Catálogo de valores por filtro: cambia con el corte de datos, no entre
+# consultas, así que se guarda en memoria (el original usaba @st.cache_data).
 @lru_cache(maxsize=2)
 def _cached_filter_frame(kind: str) -> pd.DataFrame:
     table = GENERAL_FILTER_TABLE if kind == "general" else EXPORT_FILTER_TABLE
@@ -216,14 +218,19 @@ def _log_event(kind: str, detail: str, payload: str) -> None:
 
 
 def _error_consulta(mensaje: str) -> str:
-    """Mensaje para el usuario; en datos reales apunta al diagnóstico y a los registros."""
+    """Mensaje para el usuario con la causa real, sin secretos.
+
+    La causa se incluye siempre: sin ella el aplicativo sólo dice «no se pudo» y
+    quien administra el despliegue no tiene por dónde empezar. Los textos pasan
+    por `redactar()`, que elimina llaves, frases y valores sensibles.
+    """
     if DEMO_MODE:
         return f"{mensaje} Intenta nuevamente en unos segundos."
-    ultimo = snowflake.ultimo_error
-    if ultimo:
-        return f"{mensaje} Snowflake reportó: {ultimo}. Revise /api/diagnostico."
+    causa = snowflake.ultimo_error_consulta or snowflake.ultimo_error
+    if causa:
+        return f"{mensaje} Causa: {causa}. Más detalle en la página /estado."
     return (
-        f"{mensaje} Si vuelve a ocurrir, abra /api/diagnostico para ver en qué paso falla "
+        f"{mensaje} Si vuelve a ocurrir, abra la página /estado para ver en qué paso falla "
         "la conexión con Snowflake, o revise los registros del servicio."
     )
 
@@ -284,6 +291,7 @@ def health(request: FastAPIRequest, deep: bool = False) -> dict[str, Any]:
         "snowflake": {
             "connector_installed": reporte["connector_installed"],
             "connector_version": reporte["connector_version"],
+            "pandas_arrow": reporte["pandas_arrow"],
             "missing_variables": reporte["missing_variables"],
             "key_sources": reporte["key_sources"],
             # Sólo si hubo un fallo de conexión; el detalle vive en /api/diagnostico.
@@ -363,7 +371,10 @@ def _sugerencia(fallo: dict[str, Any] | None) -> str:
         "tabla_empresas": "El rol no ve la tabla de empresas: conceda SELECT sobre TEJIDO_EMPRESARIAL_COMPLETO_BASE_MUNICIPIOS_P.",
         "tabla_bienes": "El rol no ve PUBLIC.BIENES_Y_SERVICIOS_P: sin ella fallan los filtros de exportación.",
         "tabla_eventos": "Sólo afecta la auditoría; el aplicativo funciona igual. Conceda INSERT en SEGUIMIENTO.EVENTOS.",
-        "consulta_vista_previa": "La consulta real falló: revise el mensaje; suele ser una columna o tabla sin permisos.",
+        "consulta_vista_previa": "La consulta real falló. Si el mensaje habla de una dependencia opcional "
+                                 "(«Optional dependency: pandas»), la imagen se construyó sin pyarrow: "
+                                 "requirements-api.txt debe instalar snowflake-snowpark-python[pandas]. "
+                                 "Si habla de permisos, conceda SELECT sobre las columnas o la tabla.",
     }
     return consejos.get(fallo["paso"], "Revise el mensaje de error del paso indicado.")
 

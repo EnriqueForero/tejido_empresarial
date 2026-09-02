@@ -154,3 +154,5 @@
   .orientacion__num { margin-bottom: 12px; }
   .orientacion dl { grid-template-columns: 1fr; margin-top: 14px; }
 }
+
+.panel-filtros__error { padding: 0 18px 4px; }

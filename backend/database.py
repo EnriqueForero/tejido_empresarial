@@ -20,11 +20,20 @@ import re
 import threading
 import time
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 from dotenv import load_dotenv
+
+# El conector sólo sabe devolver DataFrames si tiene el extra «pandas» (pyarrow).
+# Sin él, `to_pandas()` falla aunque la conexión y los permisos estén bien; por eso
+# se detecta aquí y las consultas usan la vía alterna (`collect()`).
+try:
+    from snowflake.connector.options import installed_pandas as PANDAS_ARROW
+except Exception:  # pragma: no cover - el conector puede no estar instalado
+    PANDAS_ARROW = False
 
 try:  # El conector sólo se necesita con datos reales.
     from snowflake.snowpark import Session
@@ -158,6 +167,9 @@ class SnowflakeService:
         # Marca de tiempo del último apretón de manos correcto con Snowflake. Sin
         # ella la interfaz no puede afirmar «está conectado»: sólo «está configurado».
         self.ultima_conexion_ok: float | None = None
+        # Causa real del último fallo de una consulta (no de la conexión). Sirve
+        # para que el mensaje al usuario diga qué pasó en vez de «no se pudo».
+        self.ultimo_error_consulta: str | None = None
 
     # ── Estado de la configuración ──────────────────────────────────────
     @property
@@ -189,6 +201,7 @@ class SnowflakeService:
         return {
             "connector_installed": self.connector_installed,
             "connector_version": version,
+            "pandas_arrow": bool(PANDAS_ARROW),
             "missing_variables": self.missing_variables,
             "key_sources": self.key_sources,
             "configured": self.configured,
@@ -300,19 +313,45 @@ class SnowflakeService:
         """
         self.session(intentos=1).sql("SELECT 1 AS TOTAL").collect()
 
-    def dataframe(self, query: str) -> pd.DataFrame:
+    def _a_pandas(self, consulta) -> pd.DataFrame:
+        """Resultado de Snowpark como DataFrame, con o sin pyarrow.
+
+        Con el extra «pandas» instalado se usa `to_pandas()`, que es la vía
+        rápida. Sin él se arma el marco con las filas, como hacía el aplicativo
+        Streamlit: más lento, pero el aplicativo sigue funcionando.
+        """
+        if PANDAS_ARROW:
+            return consulta.to_pandas()
+        filas = consulta.collect()
+        if not filas:
+            return pd.DataFrame(columns=[campo.name.strip('"') for campo in consulta.schema.fields])
+        marco = pd.DataFrame([fila.as_dict() for fila in filas])
+        # `collect()` devuelve Decimal donde Arrow devolvería números; se convierten
+        # para que el Excel y la vista previa apliquen los formatos numéricos.
+        for columna in marco.columns:
+            if marco[columna].dtype == object and marco[columna].map(lambda valor: isinstance(valor, Decimal)).any():
+                marco[columna] = pd.to_numeric(marco[columna], errors="coerce")
+        return marco
+
+    def _ejecutar(self, query: str, accion):
+        """Ejecuta la consulta y, si falla, reintenta una vez con sesión nueva."""
         try:
-            return self.session().sql(query).to_pandas()
-        except Exception:
+            resultado = accion(self.session().sql(query))
+        except Exception as primero:
             self._reset_session()
-            return self.session().sql(query).to_pandas()
+            try:
+                resultado = accion(self.session().sql(query))
+            except Exception as segundo:
+                self.ultimo_error_consulta = redactar(segundo or primero)
+                raise
+        self.ultimo_error_consulta = None
+        return resultado
+
+    def dataframe(self, query: str) -> pd.DataFrame:
+        return self._ejecutar(query, self._a_pandas)
 
     def scalar(self, query: str, key: str = "TOTAL") -> int:
-        try:
-            rows = self.session().sql(query).collect()
-        except Exception:
-            self._reset_session()
-            rows = self.session().sql(query).collect()
+        rows = self._ejecutar(query, lambda consulta: consulta.collect())
         if not rows:
             return 0
         row = rows[0]
@@ -396,12 +435,17 @@ class SnowflakeService:
         if not paso("entorno", "Variables de Snowflake presentes", _entorno):
             return pasos
 
-        # 2. Conector instalado.
+        # 2. Conector instalado y capaz de devolver tablas.
         def _conector():
             if Session is None:
                 raise RuntimeError("snowflake-snowpark-python no está instalado en la imagen.")
             reporte = self.configuration_report()
-            return {"snowpark": reporte["connector_version"], "cryptography": serialization is not None}
+            return {
+                "snowpark": reporte["connector_version"],
+                "cryptography": serialization is not None,
+                "pyarrow_para_tablas": bool(PANDAS_ARROW),
+                "modo_de_lectura": "Arrow (rápido)" if PANDAS_ARROW else "filas (sin pyarrow)",
+            }
 
         if not paso("conector", "Conector snowflake-snowpark-python disponible", _conector):
             return pasos

@@ -49,6 +49,7 @@ export default function Consultar() {
   const [cargando, setCargando] = useState(false);
   const [cargandoOpciones, setCargandoOpciones] = useState(false);
   const [error, setError] = useState('');
+  const [errorOpciones, setErrorOpciones] = useState('');
   const [sucio, setSucio] = useState(false);
   const [cajonMovil, setCajonMovil] = useState(false);
   const controladorRef = useRef<AbortController | null>(null);
@@ -71,10 +72,14 @@ export default function Consultar() {
     const temporizador = window.setTimeout(() => {
       setCargandoOpciones(true);
       obtenerOpcionesFiltros(filtros, controlador.signal)
-        .then((respuesta) => setDefiniciones(respuesta.filters))
+        .then((respuesta) => {
+          setDefiniciones(respuesta.filters);
+          setErrorOpciones('');
+        })
         .catch((razon: unknown) => {
           if (razon instanceof DOMException && razon.name === 'AbortError') return;
-          setError(razon instanceof ErrorApi ? razon.message : 'No fue posible cargar los filtros.');
+          // El aviso va dentro del panel: es ahí donde se nota que no hay opciones.
+          setErrorOpciones(razon instanceof ErrorApi ? razon.message : 'No fue posible cargar los filtros.');
         })
         .finally(() => {
           if (!controlador.signal.aborted) setCargandoOpciones(false);
@@ -234,6 +239,7 @@ export default function Consultar() {
               alBuscar={() => void ejecutar(1)}
               cargando={cargando}
               cargandoOpciones={cargandoOpciones}
+              errorOpciones={errorOpciones}
               abiertoMovil={cajonMovil}
               alCerrarMovil={() => setCajonMovil(false)}
               totalActivos={activos.length}
