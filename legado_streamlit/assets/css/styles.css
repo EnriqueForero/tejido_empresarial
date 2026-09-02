@@ -1,0 +1,91 @@
+@import url("https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400&display=swap");
+
+[data-testid="metric-container"] {
+  width: fit-content;
+  margin: auto;
+}
+
+[data-testid="metric-container"] > div {
+  width: fit-content;
+  margin: auto;
+}
+
+[data-testid="metric-container"] label {
+  width: fit-content;
+  margin: auto;
+}
+
+/* [data-testid="stMetric"] {
+  width: fit-content;
+  margin: auto;
+}
+
+[data-testid="stMetric"] label {
+  width: fit-content;
+  margin: auto;
+}
+
+[data-testid="stMetric"] > div {
+  width: fit-content;
+  margin: auto;
+}
+*/
+[data-testid="stMetric"] > div > div {
+  font-size: 1.8rem;
+}
+
+div[data-testid="stSliderTickBarMin"],
+div[data-testid="stSliderTickBarMax"] {
+  display: none;
+}
+
+.stButton [data-testid="stBaseButton-secondary"] {
+  background-color: #5A5E63 !important;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  padding: 5px 30px; 
+  font-weight: bold;
+}
+
+.stButton [data-testid="stBaseButton-secondary"]:focus, 
+.stButton [data-testid="stBaseButton-secondary"]:active {
+  color: white !important; 
+  outline: none; 
+  box-shadow: none; 
+}
+
+[data-testid="stElementToolbar"] {
+  display: none;
+}
+
+.stButton [data-testid="stBaseButton-primary"] {
+  background-color: #5A5E63 !important;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  padding: 5px 30px; 
+  font-weight: bold;
+}
+
+.stSlider [data-testid="stTickBar"] {
+  display: none;
+}
+
+.stSlider label {
+  display: block;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+}
+
+.code-container {
+  max-height: 200px;
+  overflow-y: scroll;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-radius: 5px;
+}

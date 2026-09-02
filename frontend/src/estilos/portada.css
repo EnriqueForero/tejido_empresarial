@@ -1,0 +1,111 @@
+/* ==========================================================================
+   Portada (hero) — firma visual: el TEJIDO. Empresas (nodos) entrelazadas
+   por hilos que convergen en los tres ejes de ProColombia. Lienzo a sangre,
+   paralaje sutil, pulsos de datos, entrada escalonada del texto.
+   ========================================================================== */
+
+.pagina--portada { padding-top: 0; }
+.portada { position: relative; overflow: hidden; min-height: min(680px, 88vh); display: flex; align-items: center; margin: 0 calc(50% - 50vw); background: var(--tinta); }
+.portada::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(90deg, rgba(1, 22, 39, 0.96) 0%, rgba(1, 22, 39, 0.82) 42%, rgba(1, 22, 39, 0.08) 74%); }
+.portada__fondo { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); pointer-events: none; transform: translate(calc(var(--px, 0) * 9px), calc(var(--py, 0) * 7px)); transition: transform 160ms ease-out; }
+.portada__interior { position: relative; z-index: 2; width: 100%; max-width: 1420px; margin: 0 auto; padding: 64px 28px 56px; }
+.portada__contenido { max-width: 700px; color: #fdfffc; }
+.portada__kicker { display: inline-flex; align-items: center; gap: 9px; font-family: var(--fuente-datos); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cinta-clara); border: 1px solid rgba(255, 195, 92, 0.35); background: rgba(255, 164, 0, 0.08); padding: 6px 14px; border-radius: 999px; }
+.portada__kicker::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--cinta); box-shadow: 0 0 0 3px rgba(255, 164, 0, 0.25); animation: latido 3.4s ease-in-out infinite; }
+.portada__titulo { color: #fff; font-size: clamp(32px, 4.8vw, 54px); font-weight: 600; line-height: 1.06; margin-top: 22px; letter-spacing: -0.015em; }
+.portada__titulo em { font-style: normal; background: linear-gradient(100deg, var(--cinta-clara) 0%, var(--cinta) 60%, #ff8a00 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.portada__bajada { margin-top: 18px; font-size: 16.5px; color: #d7e1e8; max-width: 60ch; line-height: 1.65; }
+.portada__acciones { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+.portada__ejes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
+.portada__eje { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.05); color: #dbe5ec; font-family: var(--fuente-display); font-size: 13.5px; }
+.portada__eje i { width: 10px; height: 10px; border-radius: 50%; background: var(--eje); box-shadow: 0 0 0 3px color-mix(in srgb, var(--eje) 25%, transparent); }
+.portada__cifras { display: flex; gap: 34px; flex-wrap: wrap; margin: 34px 0 0; padding-top: 22px; border-top: 1px solid rgba(255, 255, 255, 0.16); }
+.portada__cifras div { min-width: 110px; }
+.portada__cifras dt { font-size: 30px; font-weight: 600; color: var(--cinta); font-family: var(--fuente-datos); line-height: 1.1; }
+.portada__cifras dd { margin: 4px 0 0; font-size: 12.5px; color: #9db1bf; max-width: 180px; line-height: 1.45; }
+.portada__contenido > * { animation: hero-entra 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.portada__contenido > *:nth-child(1) { animation-delay: 60ms; }
+.portada__contenido > *:nth-child(2) { animation-delay: 150ms; }
+.portada__contenido > *:nth-child(3) { animation-delay: 240ms; }
+.portada__contenido > *:nth-child(4) { animation-delay: 330ms; }
+.portada__contenido > *:nth-child(5) { animation-delay: 420ms; }
+.portada__contenido > *:nth-child(6) { animation-delay: 510ms; }
+@keyframes hero-entra { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes latido { 0%, 100% { opacity: 1; } 50% { opacity: 0.72; } }
+
+/* --- animación del tejido --- */
+.tejido__nucleo { animation: latido 3.4s ease-in-out infinite; transform-origin: center; }
+.tejido__onda { transform-box: fill-box; transform-origin: center; animation: onda 5.4s cubic-bezier(0.25, 0.6, 0.35, 1) infinite; opacity: 0; }
+.tejido__onda--2 { animation-delay: 1.8s; }
+.tejido__onda--3 { animation-delay: 3.6s; }
+@keyframes onda { 0% { transform: scale(0.35); opacity: 0; } 12% { opacity: 0.5; } 100% { transform: scale(2.4); opacity: 0; } }
+.tejido__eje-halo { transform-box: fill-box; transform-origin: center; animation: halo-eje 4.2s ease-in-out infinite; }
+.tejido__eje-halo--1 { animation-delay: 1.4s; }
+.tejido__eje-halo--2 { animation-delay: 2.8s; }
+@keyframes halo-eje { 0%, 100% { transform: scale(1); opacity: 0.35; } 50% { transform: scale(1.35); opacity: 0.1; } }
+.tejido__nodo { animation: deriva 9s ease-in-out infinite alternate; }
+.tejido__nodo--1 { animation-duration: 7.5s; }
+.tejido__nodo--2 { animation-duration: 10.5s; animation-direction: alternate-reverse; }
+.tejido__nodo--3 { animation-duration: 8.4s; }
+@keyframes deriva { from { transform: translate(0, 0); } to { transform: translate(8px, -6px); } }
+.tejido__impulso { animation: impulso 4.8s linear infinite; opacity: 0; }
+@keyframes impulso { 0% { stroke-dashoffset: 260; opacity: 0; } 8% { opacity: 1; } 90% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+.tejido__particula { animation: particula 9s ease-in-out infinite; opacity: 0; }
+@keyframes particula { 0%, 100% { opacity: 0; transform: translateY(6px); } 35% { opacity: 0.7; } 65% { opacity: 0.35; transform: translateY(-8px); } }
+.tejido__trama { animation: trama 40s linear infinite; }
+@keyframes trama { to { transform: translateX(-46px); } }
+
+@media (max-width: 959px) { .tejido__etiquetas { display: none; } }
+@media (max-width: 720px) {
+  .portada { min-height: 580px; }
+  .portada__interior { padding: 46px 18px 42px; }
+  .portada::after { background: linear-gradient(180deg, rgba(1, 22, 39, 0.84) 0%, rgba(1, 22, 39, 0.7) 100%); }
+  .portada__fondo { opacity: 0.6; }
+  .portada__cifras { gap: 18px 24px; }
+  .portada__cifras dt { font-size: 26px; }
+  .portada__acciones .boton { flex: 1 1 200px; }
+}
+
+/* ==========================================================================
+   Secciones de inicio
+   ========================================================================== */
+.ejes-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.eje-tarjeta { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding: 24px 22px 22px; border-top: 4px solid var(--eje); }
+.eje-tarjeta__cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.eje-tarjeta__codigo { font-family: var(--fuente-datos); font-size: 11px; letter-spacing: 0.12em; color: var(--texto-suave); }
+.eje-tarjeta__icono { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--eje) 18%, #fff); color: var(--tinta); }
+.eje-tarjeta h3 { font-size: 21px; }
+.eje-tarjeta p { color: var(--texto-suave); font-size: 14px; flex: 1; }
+.eje-tarjeta ul { margin: 4px 0 0; padding-left: 18px; color: var(--texto); font-size: 13.5px; display: grid; gap: 4px; }
+.eje-tarjeta__enlace { font-family: var(--fuente-display); font-weight: 600; color: var(--azul); text-decoration: none; font-size: 14px; }
+.eje-tarjeta__enlace:hover { text-decoration: underline; }
+@media (max-width: 900px) { .ejes-grid { grid-template-columns: 1fr; } }
+
+.pestanas { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: #e9eef3; border: 1px solid var(--borde-suave); flex-wrap: wrap; }
+.pestanas button { border: 0; background: transparent; padding: 8px 16px; border-radius: 999px; font-family: var(--fuente-display); font-weight: 500; font-size: 14px; color: var(--texto-suave); transition: background var(--transicion), color var(--transicion), box-shadow var(--transicion); }
+.pestanas button:hover { color: var(--tinta); }
+.pestanas button[aria-selected='true'] { background: #fff; color: var(--tinta); box-shadow: var(--sombra-1); }
+.panel-pestana { margin-top: 18px; padding: 26px 28px; }
+.panel-pestana ul { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+.panel-pestana li::marker { color: var(--cinta); }
+.panel-pestana p { max-width: 90ch; font-size: 16px; }
+
+.pasos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; counter-reset: paso; }
+.paso { display: flex; gap: 14px; }
+.paso__num { flex: 0 0 40px; height: 40px; border-radius: 12px; background: linear-gradient(150deg, var(--tinta) 0%, var(--tinta-2) 100%); color: var(--cinta); display: grid; place-items: center; font-family: var(--fuente-datos); font-weight: 600; box-shadow: inset 0 0 0 1px rgba(255, 164, 0, 0.25); }
+.paso strong { display: block; font-family: var(--fuente-display); font-size: 17px; color: var(--tinta); }
+.paso p { color: var(--texto-suave); font-size: 13.5px; margin-top: 6px; }
+@media (max-width: 900px) { .pasos { grid-template-columns: 1fr; } }
+
+.fuentes-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.fuente { display: flex; flex-direction: column; gap: 4px; padding: 18px 20px; }
+.fuente strong { font-family: var(--fuente-display); font-size: 17px; color: var(--tinta); }
+.fuente span { color: var(--texto-suave); font-size: 13px; }
+.fuente b { margin-top: 8px; font-family: var(--fuente-datos); font-size: 12px; font-weight: 500; color: var(--cinta-oscura); letter-spacing: 0.06em; text-transform: uppercase; }
+@media (max-width: 1000px) { .fuentes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .fuentes-grid { grid-template-columns: 1fr; } }
+
+.franja-cta { margin-top: 44px; border-radius: 20px; padding: 36px 40px; background: radial-gradient(circle at 90% 10%, rgba(255, 164, 0, 0.18), transparent 32%), linear-gradient(135deg, var(--tinta), var(--tinta-2)); color: #d7e1e8; display: flex; justify-content: space-between; align-items: center; gap: 30px; flex-wrap: wrap; box-shadow: var(--sombra-3); }
+.franja-cta h2 { color: #fff; font-size: clamp(22px, 2.8vw, 30px); max-width: 26ch; }
+.franja-cta p { max-width: 60ch; margin-top: 8px; }
+@media (max-width: 600px) { .franja-cta { padding: 26px 20px; } }

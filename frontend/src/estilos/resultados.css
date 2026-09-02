@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Resultados: cabecera, descarga, herramientas, tabla, tarjetas y paginación
+   ========================================================================== */
+
+.resultados { margin-top: 24px; scroll-margin-top: calc(var(--altura-encabezado) + 16px); }
+.resultados__cabecera { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.resultados__titulo h2 { font-size: clamp(24px, 3vw, 34px); }
+.resultados__titulo h2 .dato { color: var(--tinta); }
+.resultados__resumen { color: var(--texto-suave); font-size: 13.5px; margin-top: 6px; }
+.resultados__resumen strong { color: var(--texto); font-weight: 600; }
+.resultados__avisos { margin-top: 14px; display: grid; gap: 8px; }
+
+/* ---------- descarga ---------- */
+.descarga { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.descarga__boton { min-width: 260px; }
+.descarga__detalle { font-size: 12.5px; color: var(--texto-suave); text-align: right; }
+.descarga__detalle button { font-size: 12.5px; }
+.descarga__mensaje { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 6px 10px; border-radius: 8px; }
+.descarga__mensaje--ok { background: var(--ok-fondo); color: #0d5433; }
+.descarga__mensaje--error { background: var(--alerta-fondo); color: #7a0a1c; }
+.contenido-excel { margin-top: 14px; border: 1px solid #bdd8ca; background: var(--ok-fondo); border-radius: var(--radio-chico); padding: 14px 16px; color: #185c3c; }
+.contenido-excel__cab { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.contenido-excel__cab span.dato { padding: 3px 7px; border-radius: 6px; background: var(--ok); color: #fff; font-size: 10px; letter-spacing: 0.06em; }
+.contenido-excel ol { margin: 10px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+.contenido-excel li { padding: 8px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.7); font-size: 12.5px; }
+.contenido-excel li strong { display: block; font-family: var(--fuente-datos); font-size: 11.5px; color: var(--tinta); }
+.contenido-excel p { font-size: 12.5px; margin-top: 10px; }
+
+/* ---------- barra de herramientas ---------- */
+.barra-tabla { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.barra-tabla__buscar { width: min(420px, 100%); }
+.barra-tabla__buscar .campo { min-height: 40px; }
+.barra-tabla__acciones { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.columnas { position: relative; }
+.columnas__menu { position: absolute; z-index: 60; right: 0; top: calc(100% + 8px); width: min(440px, 92vw); max-height: 460px; overflow-y: auto; padding: 14px; border: 1px solid var(--borde); border-radius: 12px; background: #fff; box-shadow: var(--sombra-3); }
+.columnas__menu header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.columnas__menu header strong { font-family: var(--fuente-display); }
+.columnas__menu header small { color: var(--texto-suave); }
+.columnas__menu label { display: flex; gap: 9px; align-items: flex-start; padding: 6px 7px; border-radius: 7px; font-size: 12.5px; cursor: pointer; }
+.columnas__menu label:hover { background: var(--papel); }
+.columnas__menu label.esencial { color: var(--texto-suave); cursor: default; }
+.columnas__menu label small { color: var(--azul); }
+.selector-tamano { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--texto-suave); }
+.selector-tamano select { min-height: 34px; border: 1px solid var(--borde); border-radius: 8px; background: #fff; padding: 4px 8px; font-size: 13px; }
+
+/* ---------- tabla ---------- */
+.tabla-resultados { margin-top: 12px; overflow: auto; max-height: min(680px, 72vh); border: 1px solid var(--borde); border-radius: 12px; background: #fff; box-shadow: var(--sombra-1); }
+.tabla-resultados table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px; }
+.tabla-resultados th { position: sticky; top: 0; z-index: 3; min-width: 140px; max-width: 280px; padding: 0; background: var(--tinta); color: #fff; text-align: left; border-right: 1px solid rgba(255, 255, 255, 0.1); border-bottom: 3px solid var(--cinta); white-space: normal; vertical-align: bottom; }
+.tabla-resultados th button { width: 100%; display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; padding: 11px 11px; border: 0; background: transparent; color: inherit; text-align: left; font: 600 12px/1.3 var(--fuente-display); cursor: pointer; }
+.tabla-resultados th button:hover { background: rgba(255, 255, 255, 0.06); }
+.tabla-resultados th .orden { color: var(--cinta); font-size: 11px; flex: 0 0 auto; }
+.tabla-resultados th.num button { justify-content: flex-end; text-align: right; }
+.tabla-resultados td { max-width: 320px; padding: 9px 11px; border-right: 1px solid #e7edf2; border-bottom: 1px solid #e1e8ed; background: #fff; vertical-align: top; line-height: 1.45; }
+.tabla-resultados tbody tr:nth-child(even) td { background: #f7f9fb; }
+.tabla-resultados tbody tr:hover td { background: #fff8e8; }
+.tabla-resultados .num { text-align: right; white-space: nowrap; }
+.tabla-resultados .fijo-1 { position: sticky; left: 0; z-index: 2; min-width: 112px; }
+.tabla-resultados .fijo-2 { position: sticky; left: 112px; z-index: 2; min-width: 240px; box-shadow: 4px 0 8px -6px rgba(1, 22, 39, 0.25); }
+.tabla-resultados th.fijo-1, .tabla-resultados th.fijo-2 { z-index: 4; }
+.tabla-resultados .enlace-empresa { color: var(--tinta); font-weight: 600; text-decoration: none; font-family: var(--fuente-display); font-size: 13px; }
+.tabla-resultados .enlace-empresa:hover { color: var(--azul); text-decoration: underline; }
+.tabla-resultados .acciones-fila { white-space: nowrap; }
+.si-no { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.si-no--si { background: var(--ok-fondo); color: var(--ok); }
+.si-no--no { background: var(--papel); color: var(--texto-suave); }
+
+/* ---------- tarjetas (móvil) ---------- */
+.tarjetas-resultados { display: none; }
+
+/* ---------- paginación ---------- */
+.paginacion { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.paginacion__estado { font-size: 12.5px; color: var(--texto-suave); }
+.paginacion__pagina { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; }
+.paginacion__pagina input { width: 64px; min-height: 34px; text-align: center; padding: 4px 6px; }
+
+@media (max-width: 780px) {
+  .resultados__cabecera { display: block; }
+  .descarga { align-items: stretch; margin-top: 14px; }
+  .descarga__boton { width: 100%; }
+  .descarga__detalle { text-align: left; }
+  .tabla-resultados { display: none; }
+  .tarjetas-resultados { display: grid; gap: 10px; margin-top: 12px; }
+  .tarjeta-empresa { border: 1px solid var(--borde); border-radius: 12px; background: #fff; padding: 14px 16px; box-shadow: var(--sombra-1); }
+  .tarjeta-empresa__cab { display: flex; justify-content: space-between; gap: 10px; align-items: center; color: var(--texto-suave); font-size: 11px; }
+  .tarjeta-empresa h3 { margin: 8px 0 12px; font-size: 17px; line-height: 1.3; }
+  .tarjeta-empresa h3 a { color: var(--tinta); text-decoration: none; }
+  .tarjeta-empresa dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .tarjeta-empresa dl div { min-width: 0; padding: 8px 9px; border-radius: 8px; background: var(--papel); }
+  .tarjeta-empresa dt { color: var(--texto-suave); font-size: 9.5px; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tarjeta-empresa dd { margin: 3px 0 0; font-size: 12.5px; overflow-wrap: anywhere; }
+  .tarjeta-empresa__pie { margin-top: 12px; display: flex; justify-content: flex-end; }
+}
+@media (max-width: 480px) { .tarjeta-empresa dl { grid-template-columns: 1fr; } }

@@ -1,0 +1,7 @@
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+python-dotenv==1.0.1
+pandas==2.2.3
+openpyxl==3.1.5
+XlsxWriter==3.2.9
+snowflake-snowpark-python==1.25.0

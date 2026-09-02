@@ -1,0 +1,105 @@
+/* styles.css */
+
+/* Importar la fuente Maven Pro desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400&display=swap');
+
+/* Fondo de la aplicación */
+[data-testid="stAppViewContainer"] > .main {
+    background-color: #ffffff;  /* Color de fondo blanco #ffffff */ 
+}
+
+/* Fondo de la barra lateral */
+[data-testid="stSidebar"] > div:first-child {
+    background-color: #f3ffff;  /* Color de fondo azul calro */
+    color: #000000;  /* Color de letra negro */
+}
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+    color: #ad1938;  /* Color de los títulos rojo */
+    font-family: 'Maven Pro', sans-serif;  /* Aplicar la fuente Maven Pro */
+}
+
+/* Texto */
+p, div, span, ul, ol, li {
+    color: #000000;  /* Color del texto negro */
+    font-family: 'Maven Pro', sans-serif;  /* Aplicar la fuente Maven Pro */
+    font-size: 20px;  /* Tamaño de fuente predeterminado */
+}
+
+/* Fondo de los widgets */
+.stTextInput, .stNumberInput, .stSelectbox, .stMultiselect, .stCheckbox, .stRadio, .stSlider, .stButton, .stTextArea, .stFileUploader, .stColorPicker {
+    background-color: #ebf9ff;  /* Color azul claro */
+    color: #000000;  /* Color del texto negro */
+    font-family: 'Maven Pro', sans-serif;  /* Aplicar la fuente Maven Pro */
+    font-size: 20px;  /* Tamaño de fuente predeterminado */
+}
+
+/* Bordes de los widgets */
+.stTextInput, .stNumberInput, .stSelectbox, .stMultiselect, .stCheckbox, .stRadio, .stSlider, .stButton, .stTextArea, .stFileUploader, .stColorPicker {
+    border: none;  /* Eliminar el borde */
+}
+
+/* Títulos de la barra lateral */
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] h5, [data-testid="stSidebar"] h6 {
+    color: #ad1938;  /* Color de los títulos de la barra lateral rojo */
+    font-family: 'Maven Pro', sans-serif;  /* Aplicar la fuente Maven Pro */
+}
+
+/* Texto de la barra lateral */
+[data-testid="stSidebar"] p, [data-testid="stSidebar"] div, [data-testid="stSidebar"] span, [data-testid="stSidebar"] li {
+    color: #000000;  /* Color del texto de la barra lateral negro */
+    font-family: 'Maven Pro', sans-serif;  /* Aplicar la fuente Maven Pro */
+    font-size: 20px;  /* Tamaño de fuente predeterminado */
+}
+
+[data-testid="stSidebarCollapsedControl"]{
+    z-index: 2;
+}
+
+/* Botón principal */
+.stButton button {
+    background-color: #528dca;  /* Color de fondo del botón azul */
+    color: white;  /* Color del texto del botón blanco */
+    border: none;  /* Sin borde */
+    border-radius: 4px;  /* Radio de borde */
+    padding: 10px 20px;  /* Relleno */
+    cursor: pointer;  /* Cursor al pasar por el botón */
+    font-family: 'Maven Pro', sans-serif;  /* Aplicar la fuente Maven Pro */
+    font-size: 20px;  /* Tamaño de fuente predeterminado */
+}
+
+/* Botón al pasar el cursor */
+.stButton button:hover {
+    background-color: #ad1938;  /* Color de fondo del botón al pasar el cursor rojo */
+}
+
+/* Tamaño de fuente específico para títulos */
+h1 { font-size: 44px; }
+h2 { font-size: 40px; }
+h3 { font-size: 36px; }
+h4 { font-size: 32px; }
+h5 { font-size: 28px; }
+h6 { font-size: 24px; }
+
+/* Tamaño de fuente específico para la barra lateral */
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4, [data-testid="stSidebar"] h5, [data-testid="stSidebar"] h6 {
+    font-size: 18px;  /* Tamaño de fuente específico para los títulos de la barra lateral */
+}
+
+/* Estilo del botón de descarga personalizado */
+.custom-download-button {
+    background-color: #b1b1b0; /* Color de fondo */
+    border: 2px solid #000000; /* Borde */
+    border-radius: 15px; /* Radio de borde */
+    padding: 10px 20px; /* Relleno */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    cursor: pointer;
+}
+.custom-download-button:hover {
+    background-color: #ad1938; /* Color de fondo al pasar el cursor */
+    color: white; /* Color del texto al pasar el cursor */
+}

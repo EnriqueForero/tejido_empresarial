@@ -1,0 +1,104 @@
+/* ==========================================================================
+   Glosario, Metodología y Ficha de empresa
+   ========================================================================== */
+
+/* ---------- glosario ---------- */
+.glosario { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start; }
+.glosario__indice { position: sticky; top: calc(var(--altura-encabezado) + 16px); max-height: calc(100vh - var(--altura-encabezado) - 32px); overflow-y: auto; }
+.glosario__indice label > span { display: block; font-weight: 600; font-size: 12.5px; margin-bottom: 6px; font-family: var(--fuente-display); }
+.categorias { margin-top: 14px; display: grid; gap: 4px; }
+.categorias button { border: 1px solid transparent; background: transparent; padding: 8px 10px; border-radius: 8px; display: flex; justify-content: space-between; gap: 10px; text-align: left; font-size: 13px; color: var(--texto); transition: background var(--transicion), color var(--transicion); }
+.categorias button:hover { background: var(--papel); }
+.categorias button[aria-pressed='true'] { background: var(--tinta); color: #fff; }
+.categorias button span { font-family: var(--fuente-datos); font-size: 11px; color: var(--texto-suave); }
+.categorias button[aria-pressed='true'] span { color: var(--cinta-clara); }
+.glosario__leyenda { margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: var(--aviso-fondo); color: var(--aviso-texto); font-size: 12.5px; display: grid; gap: 8px; }
+.glosario__leyenda strong { color: #5f470d; }
+.glosario__resumen { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--borde); padding-bottom: 14px; }
+.glosario__resumen h2 { font-size: 26px; }
+.fichas { margin-top: 14px; display: grid; gap: 8px; }
+.ficha-variable { border: 1px solid var(--borde); border-radius: 12px; background: #fff; overflow: hidden; scroll-margin-top: calc(var(--altura-encabezado) + 20px); transition: border-color var(--transicion), box-shadow var(--transicion); }
+.ficha-variable[open] { border-color: #aebdca; box-shadow: var(--sombra-2); }
+.ficha-variable--destacada { box-shadow: 0 0 0 4px rgba(255, 164, 0, 0.35); border-color: var(--cinta); }
+.ficha-variable > summary { list-style: none; cursor: pointer; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+.ficha-variable > summary::-webkit-details-marker { display: none; }
+.ficha-variable__nombre { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ficha-variable__nombre small { color: var(--azul); font: 500 10px var(--fuente-datos); text-transform: uppercase; letter-spacing: 0.06em; }
+.ficha-variable__nombre strong { color: var(--tinta); font: 600 16px var(--fuente-display); line-height: 1.3; }
+.ficha-variable__usos { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px; }
+.ficha-variable__mas { width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: var(--papel); color: var(--azul); font-size: 20px; transition: transform var(--transicion), background var(--transicion); }
+.ficha-variable[open] .ficha-variable__mas { transform: rotate(45deg); background: var(--cinta); color: var(--tinta); }
+.ficha-variable__cuerpo { border-top: 1px solid var(--borde-suave); padding: 16px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.7fr); gap: 18px; }
+.ficha-variable__cuerpo h3 { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--texto-suave); margin-bottom: 6px; }
+.ficha-variable__cuerpo p { font-size: 14px; }
+.ficha-variable__cuerpo p + p { margin-top: 8px; }
+.ficha-variable__cuerpo ul { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; display: grid; gap: 6px; }
+.ficha-variable__fuente { padding: 12px 14px; border-radius: 10px; background: var(--papel); font-size: 12.5px; color: var(--texto-suave); display: grid; gap: 10px; align-content: start; }
+.ficha-variable__fuente p { font-size: 12.5px; color: var(--texto-suave); }
+.ficha-variable__fuente a { font-size: 12.5px; }
+@media (max-width: 980px) { .glosario { grid-template-columns: 1fr; } .glosario__indice { position: static; max-height: none; } .categorias { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .ficha-variable__cuerpo { grid-template-columns: 1fr; } .categorias { grid-template-columns: 1fr; } }
+
+/* ---------- metodología ---------- */
+.metodologia { max-width: 1120px; }
+.metodologia section + section { margin-top: 34px; padding-top: 30px; border-top: 1px solid var(--borde-suave); }
+.metodologia section > p { max-width: 82ch; color: var(--texto); font-size: 15.5px; margin-top: 12px; }
+.cortes { margin-top: 18px; border: 1px solid var(--borde); border-radius: 12px; overflow: hidden; background: #fff; }
+.cortes > div { display: grid; grid-template-columns: 1fr 1.6fr 1fr; align-items: center; gap: 16px; padding: 12px 16px; }
+.cortes > div:nth-child(even) { background: var(--papel); }
+.cortes > div:not(:last-child) { border-bottom: 1px solid var(--borde-suave); }
+.cortes strong { font-family: var(--fuente-display); color: var(--tinta); }
+.cortes span { color: var(--texto-suave); font-size: 13.5px; }
+.cortes b { justify-self: end; font: 500 12px var(--fuente-datos); color: var(--cinta-oscura); letter-spacing: 0.04em; text-align: right; }
+.limites { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.limites li { padding: 16px 18px; border-left: 4px solid var(--cinta); border-radius: 0 10px 10px 0; background: #fff; box-shadow: var(--sombra-1); }
+.limites strong { display: block; font-family: var(--fuente-display); color: var(--tinta); }
+.limites span { display: block; color: var(--texto-suave); margin-top: 4px; font-size: 13.5px; }
+.definiciones { margin-top: 18px; display: grid; gap: 10px; }
+.definicion { padding: 16px 18px; }
+.definicion h3 { font-size: 16px; }
+.definicion p { color: var(--texto); font-size: 14px; margin-top: 6px; }
+.definicion ul { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; display: grid; gap: 4px; }
+.transferencia { margin-top: 18px; border-radius: 18px; padding: 30px 32px; background: linear-gradient(135deg, var(--tinta), var(--tinta-2)); color: #cdd9e1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 34px; }
+.transferencia h2 { color: #fff; }
+.transferencia .kicker { color: var(--cinta-clara); }
+.transferencia p { margin-top: 10px; max-width: 60ch; }
+.transferencia ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; align-content: center; }
+.transferencia li { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 10px; background: rgba(255, 255, 255, 0.04); font-size: 13.5px; }
+.transferencia li span.dato { width: 28px; height: 28px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; background: var(--cinta); color: var(--tinta); font-size: 12px; font-weight: 600; }
+.transferencia code { font-family: var(--fuente-datos); font-size: 12px; background: rgba(255, 255, 255, 0.08); padding: 1px 6px; border-radius: 5px; }
+@media (max-width: 860px) { .limites { grid-template-columns: 1fr; } .transferencia { grid-template-columns: 1fr; padding: 24px 20px; } .cortes > div { grid-template-columns: 1fr; gap: 2px; } .cortes b { justify-self: start; text-align: left; } }
+
+/* ---------- ficha de empresa ---------- */
+.ficha-cab { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+.ficha-cab__nit { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.ficha-kpis { margin-top: 22px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ficha-kpis .kpi__valor { font-size: 22px; overflow-wrap: anywhere; }
+.ficha-cuerpo { margin-top: 22px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+.ficha-secciones { display: grid; gap: 14px; }
+.seccion-ficha { padding: 0; overflow: hidden; }
+.seccion-ficha h3 { padding: 12px 18px; background: var(--tinta); color: #fff; font-size: 14px; letter-spacing: 0.02em; border-bottom: 3px solid var(--cinta); }
+.seccion-ficha dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.seccion-ficha dl > div { padding: 10px 18px; border-bottom: 1px solid var(--borde-suave); min-width: 0; }
+.seccion-ficha dl > div:nth-child(odd) { border-right: 1px solid var(--borde-suave); }
+.seccion-ficha dt { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texto-suave); }
+.seccion-ficha dd { margin: 3px 0 0; font-size: 14px; overflow-wrap: anywhere; }
+.seccion-ficha dd.dato { font-size: 13.5px; }
+.seccion-ficha dd.vacio { color: #9aa9b5; }
+.ficha-lateral { position: sticky; top: calc(var(--altura-encabezado) + 16px); display: grid; gap: 14px; }
+.grafico-expo { padding: 18px 20px; }
+.grafico-expo h3 { font-size: 15px; }
+.grafico-expo p { color: var(--texto-suave); font-size: 12.5px; margin-top: 4px; }
+.grafico-expo svg { width: 100%; height: auto; margin-top: 12px; display: block; }
+.grafico-expo .barra { fill: var(--tinta-2); transition: fill var(--transicion); }
+.grafico-expo .barra--corrido { fill: var(--cinta); }
+.grafico-expo .barra--anim { transform-box: fill-box; transform-origin: bottom; animation: crece 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes crece { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.grafico-expo text { font-family: var(--fuente-datos); font-size: 10px; fill: var(--texto-suave); }
+.grafico-expo__leyenda { margin-top: 10px; display: flex; gap: 12px; font-size: 11.5px; color: var(--texto-suave); flex-wrap: wrap; }
+.grafico-expo__leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 5px; background: var(--tinta-2); }
+.grafico-expo__leyenda i.corrido { background: var(--cinta); }
+.ficha-acciones { padding: 18px 20px; display: grid; gap: 10px; }
+.ficha-acciones p { font-size: 12.5px; color: var(--texto-suave); }
+@media (max-width: 1080px) { .ficha-cuerpo { grid-template-columns: 1fr; } .ficha-lateral { position: static; } .ficha-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .seccion-ficha dl { grid-template-columns: 1fr; } .seccion-ficha dl > div:nth-child(odd) { border-right: 0; } .ficha-kpis { grid-template-columns: 1fr; } }

@@ -1,0 +1,15 @@
+# Archivo .streamlit/config.toml
+[theme]
+primaryColor = "#646464"
+backgroundColor = "#F6F5F5"  # Color de fondo
+secondaryBackgroundColor = "#FFFFFF"  # Color de fondo secundario
+textColor = "#000000"  # Color del texto
+
+[client]
+showSidebarNavigation = false
+
+[server]
+runOnSave = true
+enableXsrfProtection=false
+cookieSecret = "app-seg-procolombia-syntheticus-quantil"
+maxMessageSize = 1000
